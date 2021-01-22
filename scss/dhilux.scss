@@ -13,7 +13,7 @@ since there's stuff I tend to do quite a bit.
 
 /* Make sure to import the modularscale-sass library */
 @use 'components/functions';
-@use '../scss/main.scss';
+@use '../../modularscale-sass/libsass/scss/main.scss';
 @use 'components/breadcrumb';
 @use 'components/pagination';
 @use 'components/accordion';
