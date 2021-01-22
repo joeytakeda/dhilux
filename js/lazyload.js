@@ -1,9 +1,9 @@
-
-
 "use strict"
 
 export default class LazyLoad{
     constructor() {
+        //Default, but can be a src.
+        this.noImg = null;
         if ('loading' in HTMLImageElement.prototype){
             try{
                 this.images = document.querySelectorAll('img[loading="lazy"]');
@@ -19,7 +19,9 @@ export default class LazyLoad{
                             item.classList.add('loaded');
                             item.classList.add('error');
                             img.classList.add('placeholder');
-                            img.src = noImg;
+                            if (this.noImg !== null){
+                                img.src = this.noImg;
+                            }
                         })
                     }
                 });
