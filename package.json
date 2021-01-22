@@ -10,9 +10,8 @@
     "modularscale-sass": "^3.0.10"
   },
   "scripts": {
-    "sass": "sass --update scss:css",
-    "postcss": "postcss css/*.css --use autoprefixer -r --verbose",
+    "sass": "sass --update dist/dhilux/scss:dist/dhilux/css",
+    "postcss": "postcss dist/dhilux/css/*.css --use autoprefixer -r --verbose",
     "build": "yarn run sass && yarn run postcss"
-  },
-  "files": ["scss/", "js/"]
+  }
 }
