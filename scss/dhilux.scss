@@ -12,11 +12,11 @@ since there's stuff I tend to do quite a bit.
 @use 'sass:list';
 
 /* Make sure to import the modularscale-sass library */
-@use 'components/functions';
-@use '../../modularscale-sass/stylesheets/_modularscale.scss';
-@use 'components/breadcrumb';
-@use 'components/pagination';
-@use 'components/accordion';
+@import 'components/functions';
+@import '../../modularscale-sass/stylesheets/_modularscale.scss';
+@import 'components/breadcrumb';
+@import 'components/pagination';
+@import 'components/accordion';
 
 
 
