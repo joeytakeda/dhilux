@@ -1,0 +1,43 @@
+// File for the details accordion, should be paied with the js/accordion.js
+
+
+
+@mixin dhil-details-accordion(){
+
+  :root{
+    --accordion-easing: #{ease(in-out-sine)};
+    --accordion-duration: 0.3s;
+  }
+
+  details {
+    //Remove the default icon
+    @include dhil-summary-removeArrow();
+    &.accordion{
+      .accordion__content{
+        transition: opacity var(--accordion-duration)  var(--accordion-easing);
+      }
+
+      &[aria-expanded='false'] > .accordion__content{
+        opacity: 0;
+      }
+
+      &[aria-expanded='true'] > .accordion__content{
+        opacity: 1;
+      }
+    }
+
+  }
+  // Any accordion specific content goes here
+  @content;
+
+}
+
+@mixin dhil-summary-removeArrow(){
+  summary {
+    list-style: none;
+    &::-webkit-details-marker {
+      display: none;
+    }
+  }
+}
+

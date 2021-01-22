@@ -1,0 +1,17 @@
+{
+  "name": "dhilux",
+  "version": "0.1.0",
+  "description": "UI/UX package for the DHIL",
+  "repository": "https://github.com/joeytakeda/dhilux",
+  "author": "Joey Takeda",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "modularscale-sass": "^3.0.10"
+  },
+  "scripts": {
+    "sass": "sass --update scss:css",
+    "postcss": "postcss css/*.css --use autoprefixer -r --verbose",
+    "build": "yarn run sass && yarn run postcss"
+  }
+}

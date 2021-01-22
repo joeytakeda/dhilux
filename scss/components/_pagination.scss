@@ -1,0 +1,77 @@
+
+
+@mixin dhil-pagination-minimal(){
+  display:flex;
+  justify-content:flex-end;
+  & > li:not(:last-child) {
+    border-right:2px solid $pagination-border-color;
+  }
+}
+
+@mixin dhil-pagination-circular(){
+  display:flex;
+  justify-content:center;
+  & > li{
+    margin:0 ms(-4);
+    height: 3rem;
+    width: 3rem;
+    &.active > a.page-link:not(.btn){
+      background: rgba-to-rgb(rgba($pagination-border-hover-color, 0.6));
+    }
+    &.disabled{
+      color: #CCC;
+      pointer-events:none;
+      cursor: not-allowed;
+      & > .page-link{
+        background: #f1efef;
+      }
+    }
+    & > a.page-link:not(.btn){
+      border: 2px solid $pagination-border-color;
+      height: 3rem;
+      width: 3rem;
+      border-radius: 3rem;
+      transition: border-color 0.2s ease-in-out;
+      & > .page-label{
+        @include sr-only();
+      }
+    }
+    &:not(.disabled) > a.page-link:not(.btn):hover{
+      border-radius:3rem;
+      border-color: $pagination-border-hover-color!important;
+    }
+  }
+}
+
+@mixin dhil-full-pagination-reset() {
+  & > li {
+    @include dhil-pagination-reset();
+    & > a,
+    & > span{
+      @include dhil-pagination-reset();
+      &:hover, &:focus{
+        @include dhil-pagination-reset();
+      }
+    }
+    &.active, &:hover, &:focus {
+      @include dhil-pagination-reset();
+      & > a,
+      & > span {
+        @include dhil-pagination-reset();
+        &:hover, &:focus {
+          @include dhil-pagination-reset();
+        }
+      }
+    }
+  }
+}
+
+/* Note to be called directly, but just to reset everything */
+@mixin dhil-pagination-reset(){
+  border-radius:0;
+  border:none;
+  float:none;
+  color: $base-text-color;
+  background-color:inherit;
+}
+

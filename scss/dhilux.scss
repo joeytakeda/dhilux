@@ -1,0 +1,290 @@
+/* Mixins file, which we should try and use globally across DHIL projects,
+since there's stuff I tend to do quite a bit.
+ */
+
+/**
+* Namespaces
+*
+**/
+@use 'sass:map';
+@use 'sass:math';
+@use 'sass:color';
+@use 'sass:list';
+
+/* Make sure to import the modularscale-sass library */
+@import 'components/functions';
+@import '../yarn/modularscale-sass/stylesheets/_modularscale.scss';
+@import 'components/breadcrumb';
+@import 'components/pagination';
+@import 'components/accordion';
+
+
+
+
+$heading-font: 'Serif'!default;
+$body-font: 'Sans'!default;
+$modscale-start: 4!default;
+$base-font-size: 1rem!default;
+$base-line-height: 1.6!default;
+$nav-height: rem(50px)!default;
+$pagination-border-color: #efefef!default;
+$pagination-border-hover-color: #ccc!default;
+$base-text-color: black!default;
+
+$tw-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
+0 1px 2px 0 rgba(0, 0, 0, 0.06);
+
+
+
+/* @dhil-headers
+ *
+ * Standard header creation from a typescale
+ */
+@mixin dhil-headers{
+  @for $i from 1 to 6 {
+    $num: $modscale-start - $i;
+
+    h#{$i} {
+      /* It'd be nice to use scss:max() here, but
+      PHP storm raises an erroneously raises an error.
+       */
+      @if ($num > 0){
+        font-size: ms($num);
+      } @else {
+        font-size: ms(0);
+      }
+      font-family: $heading-font;
+      @if ($i == 1){
+        letter-spacing: -2px;
+      }
+      & > a{
+        line-height: 1.4;
+      }
+    }
+  }
+}
+
+/* @dhil-reset
+ *
+ * Adds a number of resets that are common across the dhil
+ */
+@mixin dhil-reset{
+  html, body{
+    font-size: $base-font-size;
+    line-height: $base-line-height;
+  }
+
+  /*Always hide x overflow */
+  body{
+    overflow-x:hidden;
+  }
+  main{
+    min-height:calc(90vh - #{$nav-height});
+  }
+  *{
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    line-height: $base-line-height;
+  }
+
+}
+
+/* @dhil-make-navbar
+ *
+ * Resets and customizes the navbar
+ */
+@mixin dhil-make-navbar($background, $text-color, $remove-box-shadow: true){
+   .navbar-default{
+     min-height: $nav-height;
+
+     /* Change the width to 100vw rather than 100%, since 100% causes
+        jump behaviour when overflow-y on the body is set to hidden
+      */
+     width:100vw;
+     padding-right:10px;
+
+     /* Set the background colour */
+     background: $background;
+     @if ($remove-box-shadow){
+       box-shadow:none!important;
+     }
+     border:none!important;
+     @content;
+
+     /* Reset the fixed-top to be sticky rather than fixed,
+        so to avoid the problem with fixed position things overlapping
+      */
+     &.navbar-fixed-top{
+      position:sticky!important;
+     }
+     .navbar-header{
+       margin-left:0;
+       margin-right:0;
+     }
+     /* Switch the text colour */
+    .navbar-nav{
+      & > li {
+        & > a {
+          color: $text-color;
+        }
+      }
+    }
+  }
+}
+
+
+@mixin dhil-remove-scrollbar(){
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  &::-webkit-scrollbar {
+    width: 0;
+    height: 0;
+  }
+};
+
+@mixin dhil-tags ($tagListClass: 'tags', $tagItemClass: 'tag'){
+    list-style-type:none;
+    display:flex;
+    color:red;
+    flex-wrap:wrap;
+    margin: 0;
+    padding: 0;
+    align-items:center;
+    & > li{
+      margin-top: ms(-2);
+      margin-bottom:ms(-2);
+      margin-right: ms(-2);
+      transition: border-color 0.2s ease-in-out,
+      background 0.2s ease-in-out,
+      color 0.2s ease-in-out;
+      & > a{
+        padding: ms(-2) ms(-2);
+        display:inline-block;
+        transition: border-color 0.2s ease-in-out,
+        background 0.2s ease-in-out,
+        color 0.2s ease-in-out;
+        &:hover{
+          text-decoration:none;
+        }
+      }
+    }
+}
+
+
+@mixin sr-only(){
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip: rect(1px,1px,1px,1px);
+  -webkit-clip-path: inset(50%);
+  clip-path: inset(50%);
+  border: 0;
+  white-space: nowrap;
+}
+/* @dhil-gallery
+ *
+ * Creates a standard gallery view (note that we used to do this with flex,
+ * but grid is much better for handling variable numbers of objects)
+ */
+@mixin dhil-gallery($class: 'gallery', $count: 3, $column-gap: 2rem, $row-gap: 1rem){
+  .#{$class} {
+    $num: math.floor(12 / $count);
+    display:grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-column-gap: $column-gap;
+    grid-row-gap: $row-gap;
+    & > .item{
+        grid-column: span $num;
+
+        @media (max-width: 991px){
+          grid-column: span $num + 1;
+        }
+        @media (max-width: 768px){
+          grid-column: span $num + 2;
+        }
+    }
+  }
+}
+
+/* @dhil-clamp-lines
+ *
+ * Clamps lines at a particular vertical line length with a fallback for unsupported
+ * browsers.
+ */
+@mixin dhil-clamp-lines($lines, $font-size: $base-font-size, $line-height: $base-line-height, $fixed-height: false){
+
+  overflow:hidden;
+  @if ($fixed-height){
+    height: #{$lines * $font-size * $line-height};
+  } else {
+    max-height: #{$lines * $font-size * $line-height};
+}
+
+  /* But if -webkit-box is available, then we can use the much nicer -webkit-line-clamp,
+   * which provides ellipses when truncated */
+  @supports (display: -webkit-box){
+    max-height:unset;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: $lines;
+    -webkit-box-orient: vertical;
+  }
+}
+
+
+/* @dhil-lazyload
+ *
+ * Basic adjustments for images that are loaded lazily.
+ *
+ */
+
+@mixin dhil-lazyload($height, $width){
+}
+
+@mixin dhil-body-nav($n: -2){
+  .body-nav{
+    display:flex;
+    flex-wrap: wrap;
+    justify-content:space-between;
+    margin-top:0;
+    margin-bottom:ms($n);
+    align-items:end;
+    > *{
+      margin-bottom: ms($n + 1);
+    }
+    .btn-toolbar{
+      margin-top: -1px;
+    }
+    @content
+  }
+}
+
+@mixin dhil-pagination($type: 'minimal'){
+  .pagination{
+    @include dhil-full-pagination-reset();
+    @if ($type == 'minimal') {
+      @include dhil-pagination-minimal();
+    }
+
+    @if ($type == 'circular') {
+      @include dhil-pagination-circular();
+    }
+    @content;
+  }
+}
+
+
+@mixin full-width-in-container{
+  width: 100vw;
+  position: relative;
+  left: 50%;
+  right: 50%;
+  margin-left: -50vw;
+  margin-right: -50vw;
+}
+
+
