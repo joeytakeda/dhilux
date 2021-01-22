@@ -8,10 +8,5 @@
   "private": false,
   "dependencies": {
     "modularscale-sass": "^3.0.10"
-  },
-  "scripts": {
-    "sass": "sass --update dist/dhilux/scss:dist/dhilux/css",
-    "postcss": "postcss dist/dhilux/css/*.css --use autoprefixer -r --verbose",
-    "build": "yarn run sass && yarn run postcss"
   }
 }
