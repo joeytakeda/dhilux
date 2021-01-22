@@ -1,4 +1,4 @@
-/* Excellent accordion constructor that uses the Web Animations API for fast and smooth
+/* Accordion constructor that uses the Web Animations API for fast and smooth
 transitions. Taken from: https://css-tricks.com/how-to-animate-the-details-element-using-waapi/
 and subsequently modified by Joey Takeda.
  */
@@ -39,17 +39,13 @@ export default class Accordion {
         } catch(e){
             console.log(`${e}`);
         }
-
     }
 
-    init(){
-
+    init() {
         // Set the aria role
         this.el.setAttribute('aria-expanded', this.el.open);
-
         // Add a class to the element
         this.el.classList.add('accordion');
-        
         // Detect user clicks on the summary element
         this.summary.addEventListener('click', (e) => this.onClick(e));
     }
@@ -57,20 +53,18 @@ export default class Accordion {
     // Function to get custom properties
     // so to align any duration/easing stuff in the CSS
     // This can be overridden by the object declaration, however
-    getCustomProp(prop, defaultVal){
+    getCustomProp(prop, defaultVal) {
         //Get the actual declaration;
         let propDecl = `--accordion-${prop}`;
         //Get the computed style
         let style = getComputedStyle(this.el);
         //Get the property value
         let propVal = style.getPropertyValue(propDecl);
-
         return (propVal) ? propVal : defaultVal;
     }
 
     // Create the click listener
     onClick(e) {
-
         // Stop default behaviour from the browser
         e.preventDefault();
 
@@ -89,42 +83,32 @@ export default class Accordion {
         }
     }
 
-
-    makeContent(){
+    makeContent() {
         let nodes = [...this.el.childNodes].filter(n => !n.isSameNode(this.summary));
-        console.log(nodes);
         let div = document.createElement('div');
         div.classList.add('accordion__content');
-        nodes.forEach(node => {
-            div.appendChild(node);
-        })
+        nodes.forEach(node => div.appendChild(node));
         this.el.appendChild(div);
         return div;
     }
 
-
-
     open() {
         // Apply a fixed height on the element
         this.el.style.height = `${this.el.offsetHeight}px`;
-
         // Force the [open] attribute on the details element
         this.el.open = true;
-
         // Wait for the next frame to call the expand function
         window.requestAnimationFrame(() => this.expand());
     }
 
-    close(){
+    close() {
         //Add the aria label
         window.requestAnimationFrame(() => this.shrink());
     }
 
-
     expand() {
         // Set the element as "being expanding"
         this.state.push(1);
-
         // Get the current fixed height of the element
         this.startHeight = `${this.el.offsetHeight}px`;
         // Calculate the open height of the element (summary height + content height)
@@ -134,9 +118,7 @@ export default class Accordion {
         this.animate();
     }
 
-
     shrink() {
-
         // Set the element as "being closed"
         this.state.push(-1);
         // Store the current height of the element
@@ -145,14 +127,9 @@ export default class Accordion {
         this.endHeight = `${this.summary.offsetHeight}px`;
         this.el.setAttribute('aria-expanded', 'false');
         this.animate();
-
     }
 
-
-
-
     animate() {
-
         // If there is already an animation running
         if (this.animation) {
             // Cancel the current animation
@@ -175,25 +152,19 @@ export default class Accordion {
     }
 
     onAnimationFinish() {
-
         // Set the open attribute based on the parameter
         this.el.open = this.state[1] > 0;
-
         // Clear the stored animation
         this.animation = null;
-
-
         // Reset state
         this.state = [0];
-
         this.startHeight = this.endHeight = null;
         // Remove the overflow hidden and the fixed height
         this.el.style.height = this.el.style.overflow = '';
         this.el.style.pointerEvents = 'auto';
-
     }
 
-    convertDuration(dur){
+    convertDuration(dur) {
         if (/[\d]s$/g.test(dur)){
             return parseFloat(dur) * 1000;
         } else {
