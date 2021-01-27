@@ -10,14 +10,14 @@ import dialogPolyfill from '../lib/dialog-polyfill/dist/dialog-polyfill.esm.js'
 
 /** Class for creating modals */
 export default class Modals {
-    /** DOM parser */
-    parser = new DOMParser();
-    /** Index to store retrieved fragments */
-    index = new Map();
     /** Constructs the set of modals to use from the selector */
     constructor(selector) {
         this.selector = selector;
         this.links = this.getLinks();
+        /** DOM parser */
+        this.parser = new DOMParser();
+        /** Index to store retrieved fragments */
+        this.index = new Map();
     }
 
     getLinks(){
