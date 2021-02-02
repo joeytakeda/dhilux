@@ -8,21 +8,47 @@
 /** Requires the dialog polyfill from google */
 import dialogPolyfill from '../lib/dialog-polyfill/dist/dialog-polyfill.esm.js'
 
+let _;
+const parser = new DOMParser();
+const body = document.body;
+
 /** Class for creating modals */
 export default class Modals {
     /** Constructs the set of modals to use from the selector */
     constructor(selector) {
         this.selector = selector;
-        this.links = this.getLinks();
-        /** DOM parser */
-        this.parser = new DOMParser();
         /** Index to store retrieved fragments */
+        this.el = body;
         this.index = new Map();
+        this.debug = false;
+        this.linkClass = 'modal-link';
+        this.ignoreIndexes = true;
+        this.observerConfig =  {
+            attributes:true,
+            childList:false,
+            subtree:false
+        };
+        this.observer = new MutationObserver(this.checkDialog.bind(this));
+        this.active = false;
+        this.backdropClose = true;
+        this.filterParentsSelector = null;
+        this.fetching = false;
     }
 
-    getLinks(){
-        return [...Array.from(document.querySelectorAll(this.selector)).filter(this.linkFilter)]
+    // Getters
+    get links(){
+        let allLinks = this.el.querySelectorAll(this.selector);
+        let filtered = Array.from(allLinks).filter(this.defaultLinkFilter.bind(this));
+        return filtered;
     }
+
+    get dialogs(){
+        let values = [];
+        this.index.forEach((v, k, m) => values.push(v))
+        return [...values];
+    }
+
+    // Methods
 
     /**
      * Set the click event for each link
@@ -30,8 +56,12 @@ export default class Modals {
      * @returns null
      */
     init(){
+        _ = this;
+        window.Modals = this;
+        this.log(this);
         for (const link of this.links){
-            console.log(link);
+            this.log(link)
+            link.classList.add(this.linkClass);
             link.addEventListener('click', this.clickHandler.bind(this));
         }
     }
@@ -43,13 +73,21 @@ export default class Modals {
      * @returns {Promise<void>}
      */
     async clickHandler(e){
-        let link = e.currentTarget;
+        this.caller = e.currentTarget;
         try{
             e.preventDefault();
-            this.current = await this.getDialog(link);
+            // Don't do anything if we're already fetching
+            if (this.fetching){
+                console.log(`Tried to fetch again, so blocking `);
+                return;
+            }
+            this.fetching = true;
+            this.current = await this.getDialog(this.caller);
+            this.observer.observe(this.current, this.observerConfig);
             this.current.showModal();
+            this.fetching = false;
         } catch(err){
-            this.errorHandler(err);
+            this.errorHandler(err).bind(this);
         }
     }
 
@@ -70,13 +108,19 @@ export default class Modals {
                 .then(response => response.text())
                 .then(text => {
                     let dialog = this.getDialogFromText(text);
+                    this.processDialog(dialog);
                     // Register the dialog if necessary
                     dialogPolyfill.registerDialog(dialog);
+                    if (!(typeof dialog.close === 'function')){
+                        dialog.close = function(){
+                            dialog.querySelector("form[method='close']").submit();
+                        }
+                    }
                     document.body.appendChild(dialog);
                     this.index.set(uri, dialog);
                     return resolve(dialog);
                 })
-                .catch(this.errorHandler);
+                .catch(this.errorHandler.bind(this));
         });
     }
 
@@ -87,9 +131,41 @@ export default class Modals {
      * @returns {HTMLDialogElement|void}
      */
     getDialogFromText(text){
-        let DOM = this.parser.parseFromString(text, 'text/html');
+        let DOM = parser.parseFromString(text, 'text/html');
         let dialog = DOM.querySelector('dialog');
-        return this.processDialog(dialog);
+        return dialog
+    }
+
+    checkDialog(mutations){
+        for (const mutation of mutations){
+            if (mutation.attributeName === 'open'){
+                this.active = !this.active;
+                this.toggle();
+            }
+        }
+    }
+
+    toggle(){
+        // Toggle the aux classes for scrolling stuff
+        body.classList.toggle('dialog-active');
+        this.caller.classList.toggle('active');
+        // Set the event listener on the document to close on backdrop
+        if (this.active){
+            if (this.backdropClose) body.addEventListener('click', this.bodyClickHandler, true);
+            return;
+        }
+        if (this.backdropClose) body.removeEventListener('click', this.bodyClickHandler, true);
+        this.observer.disconnect();
+        this.caller = null;
+    }
+
+    bodyClickHandler(e){
+        // We can't bind this to the bodyClickHandler so that it can be removed,
+        // so use the Window.modals object (also known as _);
+        let el = (typeof e.path === 'object') ? e.path[0] : e.target;
+        if (el === _.current){
+            _.current.close();
+        }
     }
 
     /**
@@ -99,19 +175,38 @@ export default class Modals {
      * @param {HTMLAnchorElement} link - The link to use
      * @returns {boolean}
      */
-    linkFilter(link){
+    defaultLinkFilter(link){
+
+
+        if (this.filterParentsSelector !== null){
+            if (link.closest(this.filterParentsSelector) !== null){
+                 return false;
+            }
+        }
+
+        if (typeof this.linkFilter === 'function'){
+            console.log(this.linkFilter(link));
+            if (!this.linkFilter(link)){
+                return false;
+            };
+        }
+
         return /\d+\/?$/.test(link.getAttribute('href'));
+
+
     }
 
     /**
-     * Processes the dialog element; by default, this does nothing
-     * but can be used to add event listeners etc.
+     * Processes the dialog element; by default, this removes an open attribute
+     * (if it exists) but otherwise does nothing else
      *
      * @param dialog
-     * @returns {HTMLDialogElement}
+     * @returns {null}
      */
     processDialog(dialog){
-        return dialog;
+        if (dialog.hasAttribute('open')){
+            dialog.removeAttribute('open');
+        }
     }
 
     /**
@@ -132,6 +227,14 @@ export default class Modals {
      */
     errorHandler(err){
         console.trace(err);
-        return;
+        window.location = this.caller.href;
+    }
+
+
+    log(msg){
+        if (this.debug){
+            console.log(msg);
+        }
     }
 }
+

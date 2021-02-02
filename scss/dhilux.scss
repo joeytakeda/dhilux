@@ -17,6 +17,7 @@ since there's stuff I tend to do quite a bit.
 @import 'components/breadcrumb';
 @import 'components/pagination';
 @import 'components/accordion';
+@import 'components/modal';
 
 
 
@@ -143,32 +144,43 @@ $tw-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
   }
 };
 
-@mixin dhil-tags ($tagListClass: 'tags', $tagItemClass: 'tag'){
-    list-style-type:none;
-    display:flex;
-    color:red;
-    flex-wrap:wrap;
-    margin: 0;
-    padding: 0;
-    align-items:center;
+@mixin dhil-tags (){
+  @include dhil-tag-list;
     & > li{
-      margin-top: ms(-2);
-      margin-bottom:ms(-2);
-      margin-right: ms(-2);
-      transition: border-color 0.2s ease-in-out,
-      background 0.2s ease-in-out,
-      color 0.2s ease-in-out;
+      @include dhil-tag-item;
       & > a{
-        padding: ms(-2) ms(-2);
-        display:inline-block;
-        transition: border-color 0.2s ease-in-out,
-        background 0.2s ease-in-out,
-        color 0.2s ease-in-out;
-        &:hover{
-          text-decoration:none;
-        }
+        @include dhil-tag-link;
       }
     }
+}
+
+@mixin dhil-tag-list(){
+  list-style-type:none;
+  display:flex;
+  flex-wrap:wrap;
+  margin: 0;
+  padding: 0;
+  align-items:center;
+}
+
+@mixin dhil-tag-item(){
+  margin-top: ms(-2);
+  margin-bottom:ms(-2);
+  margin-right: ms(-2);
+  transition: border-color 0.2s ease-in-out,
+  background 0.2s ease-in-out,
+  color 0.2s ease-in-out;
+}
+
+@mixin dhil-tag-link(){
+  padding: ms(-2) ms(-2);
+  display:inline-block;
+  transition: border-color 0.2s ease-in-out,
+  background 0.2s ease-in-out,
+  color 0.2s ease-in-out;
+  &:hover{
+    text-decoration:none;
+  }
 }
 
 
@@ -218,6 +230,8 @@ $tw-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
 @mixin dhil-clamp-lines($lines, $font-size: $base-font-size, $line-height: $base-line-height, $fixed-height: false){
 
   overflow:hidden;
+
+/* If doesn't support -webkit-box */
   @if ($fixed-height){
     height: #{$lines * $font-size * $line-height};
   } else {
@@ -252,7 +266,7 @@ $tw-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
     justify-content:space-between;
     margin-top:0;
     margin-bottom:ms($n);
-    align-items:end;
+    align-items:flex-end;
     > *{
       margin-bottom: ms($n + 1);
     }

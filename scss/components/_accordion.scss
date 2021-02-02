@@ -1,8 +1,10 @@
 // File for the details accordion, should be paied with the js/accordion.js
 
 
+$summary-bg-open: rgba(244, 244, 244, 0.8)!default;
+$summary-bg-closed: rgba(244,244, 244)!default;
 
-@mixin dhil-details-accordion(){
+@mixin dhil-details-accordion($use-summary: false){
 
   :root{
     --accordion-easing: #{ease(in-out-sine)};
@@ -24,11 +26,35 @@
       &[aria-expanded='true'] > .accordion__content{
         opacity: 1;
       }
+      @if $use-summary{
+        @include dhil-summary-style();
+      }
     }
 
   }
+
   // Any accordion specific content goes here
   @content;
+
+}
+
+@mixin dhil-summary-style(){
+  &[open] > summary{
+      background-color: $summary-bg-open;
+  }
+
+  summary{
+    padding: 1rem;
+    text-transform: uppercase;
+    font-variant: small-caps;
+    font-size: 1rem;
+    font-weight: 500;
+    background-color: $summary-bg-closed;
+    transition: background-color 0.2s cubic-bezier(0.455, 0.03, 0.515, 0.955);
+    cursor: pointer;
+  }
+
+
 
 }
 
