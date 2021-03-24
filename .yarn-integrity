@@ -1,0 +1,18 @@
+{
+  "systemParams": "darwin-x64-88",
+  "modulesFolders": [
+    ""
+  ],
+  "flags": [],
+  "linkedModules": [
+    "roy"
+  ],
+  "topLevelPatterns": [
+    "modularscale-sass@^3.0.10"
+  ],
+  "lockfileEntries": {
+    "modularscale-sass@^3.0.10": "https://registry.yarnpkg.com/modularscale-sass/-/modularscale-sass-3.0.10.tgz#3a596b090360129dd2375bee81b9318085cb47b3"
+  },
+  "files": [],
+  "artifacts": {}
+}

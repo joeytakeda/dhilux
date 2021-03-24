@@ -1,0 +1,27 @@
+// A bit of SCSS for the accessible tables. It really doesn't do much.
+
+$breakpoint: 767px;
+
+
+@media (max-width: $breakpoint){
+  table{
+    thead{
+      display:none;
+    }
+    thead + tbody {
+      tr, td {
+        display: block;
+      }
+
+      td {
+        text-align: left !important;
+      }
+
+      td:before {
+        content: attr(data-value);
+        font-weight: bold;
+        margin-right: .5em;
+      }
+    }
+  }
+}

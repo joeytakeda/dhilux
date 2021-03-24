@@ -25,8 +25,6 @@ Contains a number of helper functions and utilities
 
 ### `js`
 
-Currently contains two javascript components:
-
 * `Accordion` (`accordion.js`): A progressive enhancement for HTML `details` element, adapted from 
 https://css-tricks.com/how-to-animate-the-details-element-using-waapi/ and modified slightly. To use
 accordion, pass each `details` element to the constructor:
@@ -53,6 +51,21 @@ sloth.noImg = 'path/to/my/default/img.jpg';
 sloth.parentSelector = "div.parent";
 
 ```
+
+* A11Y Tables
+
+Taken from https://adrianroselli.com/2017/11/a-responsive-accessible-table.html 
+with some small modifications.
+
+To use:
+
+```
+    import A11YTables from "a11y_tables.js";
+    let accessibleTables = new A11YTables;
+    accessibleTables.init();
+```
+
+Note you *must* include the associated SCSS stylesheet.
 
 Both of these components have associated SCSS modules `scss/components/_accordion.scss` 
 and `scss/components/_lazyload.scss`.
