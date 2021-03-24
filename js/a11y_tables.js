@@ -69,6 +69,9 @@ class A11YTable{
     handleCell(cell){
         if (cell.innerText.trim().length == 0){
             cell.classList.add('empty-cell');
+        } else {
+            let wrapper = `<span>${cell.innerHTML}</span>`;
+            cell.innerHTML = wrapper;
         }
         if (this.headers.length > 0){
             cell.setAttribute('data-value', this.headers[cell.cellIndex]);

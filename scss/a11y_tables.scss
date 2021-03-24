@@ -9,10 +9,16 @@ $breakpoint: 767px;
       display:none;
     }
     thead + tbody {
-      tr, td {
+      display:block;
+      tr{
         display: block;
       }
-
+      td{
+        display:flex;
+        > span{
+          display:block;
+        }
+      }
       td {
         text-align: left !important;
       }
