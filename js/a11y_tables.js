@@ -70,7 +70,7 @@ class A11YTable{
         if (cell.innerText.trim().length == 0){
             cell.classList.add('empty-cell');
         } else {
-            let wrapper = `<span>${cell.innerHTML}</span>`;
+            let wrapper = `<div class="cell-content">${cell.innerHTML}</div>`;
             cell.innerHTML = wrapper;
         }
         if (this.headers.length > 0){

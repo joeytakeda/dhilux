@@ -1,7 +1,12 @@
 // A bit of SCSS for the accessible tables. It really doesn't do much.
 
-$breakpoint: 767px;
+$breakpoint: 767px !default;
 
+*[role='cell'] > .cell-content{
+    display:inline;
+    margin:0;
+    padding:0;
+}
 
 @media (max-width: $breakpoint){
   table{

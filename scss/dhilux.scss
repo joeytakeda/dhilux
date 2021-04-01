@@ -301,4 +301,12 @@ $tw-box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1),
   margin-right: -50vw;
 }
 
+@mixin dhil-background-blur($background-color: rgb(0,0,0), $opacity: 0.7, $amount: 4px, $fallback-opacity: 0.9){
+  background: rgba($background-color, $fallback-opacity);
+  @supports ((-webkit-backdrop-filter: blur(1px)) or (backdrop-filter: blur(1px))){
+      backdrop-filter: blur(#{$amount});
+      background: rgba($background-color, $opacity);
+  }
+}
+
 
